@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     minlength: 2,
     maxlength: 30,
+    required: true,
     default: 'Жак-Ив Кусто',
   },
   about: {
