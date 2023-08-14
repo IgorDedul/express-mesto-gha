@@ -16,7 +16,7 @@ const app = express();
 app.use(bodyParser.json());
 
 app.use('/users', require('./routes/users'));
-app.use('/cards', require('./routes/cards'));
+//app.use('/cards', require('./routes/cards'));
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
