@@ -24,6 +24,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get('/', (req, res) => res.send('Сервер в работе'));
 app.use(require ('./routes/users'));
 app.use(require ('./routes/cards'));
 
