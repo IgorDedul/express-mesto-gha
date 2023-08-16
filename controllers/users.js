@@ -12,7 +12,8 @@ const getUsers = (req, res) => {
 
 //Возвращает пользователя по _id
 const getUser = (req, res) => {
-  return User.findById(req.params)
+  const { userId } = req.params;
+  return User.findById(userId)
     .then((user) => {
       if (!user) {
         return res.status(404).send('Пользователь не найден');
@@ -24,26 +25,17 @@ const getUser = (req, res) => {
 
 //Создаёт пользователя
 const createUser = (req, res) => {
-  const {
-    name, about, avatar
-  } = req.body;
-
-  return User.create({name, about, avatar})
+  return User.create({...req.body})
     .then((user) => {
       return res.status(201).send(user);
     })
     .catch((err) => {
       console.log(err);
-      if (err.name === 'ValidationError') {
-        return res.status(400).send('Переданы некорректные данные в метод создания пользователя');
-      }
-      if (err.name === 'CastError') {
-        return res.status(400).send('Переданы некорректные данные в метод создания пользователя');
-      }
-    return res.status(500).send('Ошибка сервера');
+      return res.status(500).send('Ошибка сервера');
     });
 };
 
+/**
 // Обновление профиля
 const updateProfile = (req, res) => {
   const { name, about } = req.body;
@@ -85,12 +77,12 @@ const updateAvatar = (req, res) => {
       return res.status(201).send(user);
     });
 };
-
+**/
 
 module.exports = {
   getUsers,
   getUser,
   createUser,
-  updateProfile,
-  updateAvatar,
+  //updateProfile,
+  //updateAvatar,
 };
