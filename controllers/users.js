@@ -35,7 +35,6 @@ const createUser = (req, res) => {
     });
 };
 
-/**
 // Обновление профиля
 const updateProfile = (req, res) => {
   const { name, about } = req.body;
@@ -77,12 +76,11 @@ const updateAvatar = (req, res) => {
       return res.status(201).send(user);
     });
 };
-**/
 
 module.exports = {
   getUsers,
   getUser,
   createUser,
-  //updateProfile,
-  //updateAvatar,
+  updateProfile,
+  updateAvatar,
 };
