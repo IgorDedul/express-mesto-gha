@@ -1,7 +1,6 @@
 const User = require('../models/user');
 
-
-//Возвращает всех пользователей
+//  Возвращает всех пользователей
 const getUsers = (req, res) => {
   return User.find({})
     .then((users) => {
@@ -10,7 +9,7 @@ const getUsers = (req, res) => {
     .catch((err) => res.status(500).send('Ошибка сервера'));
 };
 
-//Возвращает пользователя по _id
+//  Возвращает пользователя по _id
 const getUser = (req, res) => {
   const { userId } = req.params;
   return User.findById(userId)
@@ -20,10 +19,15 @@ const getUser = (req, res) => {
       }
       return res.status(200).send(user);
     })
-    .catch((err) => res.status(500).send('Ошибка сервера'));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send('Ошибка валидации');
+      }
+      return res.status(500).send('Ошибка сервера')
+  });
 };
 
-//Создаёт пользователя
+//  Создаёт пользователя
 const createUser = (req, res) => {
   return User.create({...req.body})
     .then((user) => {
@@ -31,6 +35,9 @@ const createUser = (req, res) => {
     })
     .catch((err) => {
       console.log(err);
+      if (err.name === 'ValidationError') {
+        return res.status(400).send('Переданы некорректные данные');
+      }
       return res.status(500).send('Ошибка сервера');
     });
 };
@@ -45,7 +52,7 @@ const updateProfile = (req, res) => {
         return res.status(404).send('Пользователь не найден');
       }
 
-      return res.status(201).send(user);
+      return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
@@ -66,7 +73,7 @@ const updateAvatar = (req, res) => {
         return res.status(404).send('Пользователь не найден');
       }
 
-      return res.status(201).send(user);
+      return res.status(200).send(user);
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {

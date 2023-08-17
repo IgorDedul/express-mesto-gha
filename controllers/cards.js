@@ -20,6 +20,9 @@ const createCard = (req, res) => {
     })
     .catch((err) => {
       console.log(err);
+      if (err.name === 'ValidationError') {
+        return res.status(400).send('Переданы некорректные данные');
+      }
       return res.status(500).send('Ошибка сервера');
     });
 };
@@ -45,7 +48,12 @@ const deleteCard = (req, res) => {
         return res.status(500).send('Ошибка сервера');
       });
     })
-    .catch((err) => res.status(500).send('Ошибка сервера'));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(400).send('Некорректный id карточки');
+      }
+      return res.status(500).send('Ошибка сервера');
+     });
 };
 
 //Поставить лайк карточке
