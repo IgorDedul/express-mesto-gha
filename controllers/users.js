@@ -1,3 +1,5 @@
+const bcrypt = require('bcryptjs');
+
 const User = require('../models/user');
 
 //  Возвращает всех пользователей
@@ -29,7 +31,11 @@ const getUser = (req, res) => {
 
 //  Создаёт пользователя
 const createUser = (req, res) => {
-  return User.create({...req.body})
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({name, about, avatar, email, password: hash,}))
     .then((user) => {
       return res.status(201).send(user);
     })
