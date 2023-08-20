@@ -3,6 +3,8 @@ const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
+const { login, createUser } = require('./controllers/users');
+
 require('dotenv').config();
 
 const app = express();
@@ -21,8 +23,12 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res) => res.send('Сервер в работе'));
+
 app.use(require('./routes/users'));
 app.use(require('./routes/cards'));
+
+app.post('/signin', login);
+app.post('/signup', createUser);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
