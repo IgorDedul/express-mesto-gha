@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 
@@ -90,10 +91,50 @@ const updateAvatar = (req, res) => {
     });
 };
 
+// Аунтификация
+const login = (req, res, next) => {
+  const { email, password } = req.body;
+
+  User.findOne({ email }).select('+password')
+    .then((user) => {
+      if (!user) {
+        return res.status(401).send('Неправильные логин или пароль');
+      }
+
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            return res.status(401).send('Неправильные логин или пароль');
+          }
+
+          const token = jwt.sign({ _id: user._id }, secretKey, { expiresIn: '7d' });
+
+          res
+            .cookie('jwt', token, {
+              maxAge: 7 * 24 * 60 * 60 * 1000,
+              httpOnly: true,
+              sameSite: true,
+            });
+
+          res.send({
+            _id: user._id,
+            name: user.name,
+            about: user.about,
+            avatar: user.avatar,
+            email: user.email,
+          });
+        });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
 module.exports = {
   getUsers,
   getUser,
   createUser,
   updateProfile,
   updateAvatar,
+  login,
 };
