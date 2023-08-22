@@ -25,12 +25,13 @@ app.use((req, res, next) => {
 
 app.get('/', (req, res) => res.send('Сервер в работе'));
 
+app.post('/signin', login);
+app.post('/signup', createUser);
+
 app.use(auth);
 app.use(require('./routes/users'));
 app.use(require('./routes/cards'));
 
-app.post('/signin', login);
-app.post('/signup', createUser);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
