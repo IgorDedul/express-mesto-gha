@@ -11,11 +11,10 @@ const {
 } = require('../controllers/users');
 
 router.get('/users', getUsers);
+router.get('/users/me', getMe);
 router.get('/users/:userId', validateUserId, getUser);
 
-router.get('/users/me', getMe);
-
-router.patch('/me', validateUpdateProfile, updateProfile);
-router.patch('/me/avatar', validateUpdateAvatar, updateAvatar);
+router.patch('/users/me', validateUpdateProfile, updateProfile);
+router.patch('/users/me/avatar', validateUpdateAvatar, updateAvatar);
 
 module.exports = router;

@@ -7,7 +7,6 @@ const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
 const ConflictError = require('../errors/ConflictError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
-const ForbiddenError = require('../errors/ForbiddenError');
 
 const { secretKey = 'SECRET_KEY' } = process.env;
 
@@ -48,7 +47,13 @@ const createUser = (req, res, next) => {
       name, about, avatar, email, password: hash,
     }))
     .then((user) => {
-      res.status(201).send(user);
+      res.status(201).send({
+        _id: user._id,
+        name: user.name,
+        about: user.about,
+        avatar: user.avatar,
+        email: user.email,
+      });
     })
     .catch((err) => {
       console.log(err);
@@ -127,7 +132,7 @@ const login = (req, res, next) => {
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        throw new ForbiddenError('Такого пользователя не существует');
+        throw new UnauthorizedError('Такого пользователя не существует');
       }
 
       return bcrypt.compare(password, user.password)
@@ -143,7 +148,7 @@ const login = (req, res, next) => {
               maxAge: 7 * 24 * 60 * 60 * 1000,
               httpOnly: true,
               sameSite: true,
-            });
+            }).end();
         });
     })
     .catch((err) => {
