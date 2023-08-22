@@ -2,9 +2,12 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
+const errorHandler = require('./middlewares/errorHandler');
+const NotFoundError = require('./errors/NotFoundError');
 
 require('dotenv').config();
 
@@ -24,6 +27,9 @@ app.use(auth);
 app.use(require('./routes/users'));
 app.use(require('./routes/cards'));
 
+app.use((req, res, next) => next(new NotFoundError('Страницы по запрошенному URL не существует')));
+app.use(errors());
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
