@@ -9,15 +9,15 @@ const ConflictError = require('../errors/ConflictError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 const ForbiddenError = require('../errors/ForbiddenError');
 
-const { secretKey = 'SECRET_KEY'} = process.env;
+const { secretKey = 'SECRET_KEY' } = process.env;
 
 //  Возвращает всех пользователей
 const getUsers = (req, res, next) => {
-  return User.find({})
+  User.find({})
     .then((users) => {
-      return res.status(200).send(users);
+      res.status(200).send(users);
     })
-    .catch((err) => {next(err)});
+    .catch((err) => { next(err); });
 };
 
 //  Возвращает пользователя по _id
@@ -35,7 +35,7 @@ const getUser = (req, res, next) => {
         return next(new ValidationError('Ошибка валидации'));
       }
       return next(err);
-  });
+    });
 };
 
 //  Создаёт пользователя
@@ -44,9 +44,11 @@ const createUser = (req, res, next) => {
     name, about, avatar, email, password,
   } = req.body;
   bcrypt.hash(password, 10)
-    .then((hash) => User.create({name, about, avatar, email, password: hash,}))
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
     .then((user) => {
-      return res.status(201).send(user);
+      res.status(201).send(user);
     })
     .catch((err) => {
       console.log(err);
@@ -144,9 +146,9 @@ const login = (req, res, next) => {
             });
         });
     })
-        .catch((err) => {
-          next(err);
-        });
+    .catch((err) => {
+      next(err);
+    });
 };
 
 module.exports = {
