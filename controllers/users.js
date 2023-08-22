@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 
+const { secretKey = 'SECRET_KEY'} = process.env;
+
 //  Возвращает всех пользователей
 const getUsers = (req, res) => {
   return User.find({})
@@ -45,7 +47,29 @@ const createUser = (req, res) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send('Переданы некорректные данные');
       }
+      if (err.code === 11000) {
+        return res.status(409).send('Такой пользователь уже существует');
+      }
       return res.status(500).send('Ошибка сервера');
+    });
+};
+
+// Получение информации о пользователе
+const getMe = (req, res, next) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send('Пользователь не найден');
+      }
+
+      return res.send({ data: user });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(401).send('Некорректный id пользователя');
+      }
+
+      return next(err);
     });
 };
 
@@ -98,7 +122,7 @@ const login = (req, res, next) => {
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return res.status(401).send('Неправильные логин или пароль');
+        return res.status(403).send('Такого пользователя не существует');
       }
 
       return bcrypt.compare(password, user.password)
@@ -115,25 +139,18 @@ const login = (req, res, next) => {
               httpOnly: true,
               sameSite: true,
             });
-
-          res.send({
-            _id: user._id,
-            name: user.name,
-            about: user.about,
-            avatar: user.avatar,
-            email: user.email,
-          });
         });
     })
-    .catch((err) => {
-      next(err);
-    });
+        .catch((err) => {
+          next(err);
+        });
 };
 
 module.exports = {
   getUsers,
   getUser,
   createUser,
+  getMe,
   updateProfile,
   updateAvatar,
   login,

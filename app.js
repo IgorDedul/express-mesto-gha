@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 const { login, createUser } = require('./controllers/users');
+const auth = require('./middlewares/auth');
 
 require('dotenv').config();
 
@@ -24,6 +25,7 @@ app.use((req, res, next) => {
 
 app.get('/', (req, res) => res.send('Сервер в работе'));
 
+app.use(auth);
 app.use(require('./routes/users'));
 app.use(require('./routes/cards'));
 
